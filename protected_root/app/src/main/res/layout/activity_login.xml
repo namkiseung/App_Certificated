@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/maincolornamki">
+
+    <FrameLayout
+        android:layout_centerInParent="true"
+        android:layout_width="850px"
+        android:layout_height="wrap_content"
+        android:padding="30dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/border">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <!--아이디 입력란 UI-->
+            <TextView
+                android:id="@+id/tvHello"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Join Chating"
+                android:textSize="8pt"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/blacknamki"/>
+            <EditText
+                android:id="@+id/etLogin"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tvHello"
+                android:background="@drawable/border"
+                android:hint="  Email"
+                android:paddingLeft="2dp"
+                android:inputType="none"
+                android:focusable="true"
+                android:singleLine="true" />
+            <!--비밀번호 입력란 UI-->
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/etLogin"
+                android:paddingLeft="2dp"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/border"
+                android:inputType="textPassword"
+                android:hint="  PassWord"
+                android:singleLine="true" />
+            <!--비밀번호 기억 UI-->
+            <CheckBox
+                android:id="@+id/chkPw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/etPassword"
+                android:text="기억하기" />
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="로그인"
+                android:layout_below="@+id/chkPw"
+                android:layout_alignParentLeft="true"
+                android:textColor="#ffffff"
+                android:background="@color/maincolornamki"
+                android:layout_centerHorizontal="true"/>
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="가입"
+                android:layout_below="@+id/chkPw"
+                android:layout_alignParentRight="true"
+                android:textColor="#ffffff"
+                android:background="@color/maincolornamki"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+    </FrameLayout>
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NAMKI android app"
+        android:textSize="10pt"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="150dp"
+        android:textColor="@color/whitenamki"/>
+    <ProgressBar
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:id="@+id/pbLogin"/>
+</RelativeLayout>
