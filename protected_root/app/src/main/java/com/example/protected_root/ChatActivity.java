@@ -30,111 +30,117 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
+    String TAG = this.getClass().getSimpleName();
+
+    private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
-    FirebaseDatabase database;
+    private RecyclerView.LayoutManager mLayoutManager;
+    String[] myDataset = {"JAMES: 안녕", "CHRIS: 오늘 뭐했어?","LANE: 영화볼래?"};
+
+
     EditText etText;
     Button btnSend;
-    String[] myDataset = {"aaaa","bbbbb","ccccc"};
     String email;
     List<Chat> mChat;
+    FirebaseDatabase database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        //Access user Infomation
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         database = FirebaseDatabase.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            String uid = user.getUid();
-            Log.d("NamkiLog","Device info: "+user.getDisplayName()+" and Uri: "+user.getPhotoUrl()+" and uid: "+uid);
             // Name, email address, and profile photo Url
-            //String name = user.getDisplayName();
-            //Uri photoUrl = user.getPhotoUrl();
             email = user.getEmail();
-            // Check if user's email is verified
-            //boolean emailVerified = user.isEmailVerified();
-
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getIdToken() instead.
-
         }
-
-
-        etText = (EditText)findViewById(R.id.etMessages);
-        btnSend = (Button)findViewById(R.id.btnSend);
+        etText = (EditText) findViewById(R.id.etMessages);
+        btnSend = (Button) findViewById(R.id.btnSend);
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
+
                 String stText = etText.getText().toString();
-                if(stText.equals("") || stText.isEmpty()) {
-                    Toast.makeText(ChatActivity.this, "내용이 없습니다.", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(ChatActivity.this, email+", "+stText, Toast.LENGTH_SHORT).show();
+                if (stText.equals("") || stText.isEmpty()){
+                    Toast.makeText(ChatActivity.this, "내용을 입력해 주세요.", Toast.LENGTH_SHORT).show();
+                } else {
+                    //Toast.makeText(ChatActivity.this, stText, Toast.LENGTH_SHORT).show();
+                    myDataset[myDataset.length+1]=email+": "+stText;
 
-                    Calendar c = Calendar.getInstance();
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    //System.out.println("Current time:"+ c.getTime());
-                    String formattedDate = df.format(c.getTime());
+                    //Calendar c = Calendar.getInstance();
+                    //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    //String formattedDate = df.format(c.getTime());
+                    DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("chats");//.child(formattedDate);
 
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    // Write a message to the database
-                    DatabaseReference myRef = database.getReference("chats").child(formattedDate);
+//                    Hashtable<String, String> chat = new Hashtable<String, String>();
+//                    chat.put("email", email);
+//                    chat.put("text", stText);
+                    myRef.child("chats").setValue(stText);
 
-                    Hashtable<String, String> chat = new Hashtable<String, String>();
-                    chat.put("email", email);
-                    chat.put("text", stText);
-                    myRef.setValue(chat);
                 }
             }
         });
 
-        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+//        Button btnFinish = (Button) findViewById(R.id.btnFinish);
+//        btnFinish.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                FirebaseAuth.getInstance().signOut();
+//                finish();
+//
+//            }
+//        });
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        mChat= new ArrayList<>();
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mChat = new ArrayList<>();
         // specify an adapter (see also next example)
-        mAdapter = new MyAdapter(mChat);
-        recyclerView.setAdapter(mAdapter);
+        mAdapter = new MyAdapter(myDataset);//mAdapter = new MyAdapter(mChat, email);
+        mRecyclerView.setAdapter(mAdapter);//mRecyclerView.setAdapter(mAdapter);
 
         DatabaseReference myRef = database.getReference("chats");
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-               Chat chat = dataSnapshot.getValue(Chat.class);
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Chat chat = dataSnapshot.getValue(Chat.class);
+
+                // [START_EXCLUDE]
+                // Update RecyclerView
+
                 mChat.add(chat);
-                mAdapter.notifyItemInserted(mChat.size()-1);
+                mAdapter.notifyItemInserted(mChat.size() - 1);
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
             }
 
             @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
 
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
-        //광고박자
+
 
     }
     @Override

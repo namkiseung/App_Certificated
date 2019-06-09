@@ -1,12 +1,17 @@
 package com.example.protected_root;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,23 +24,59 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
+    Handler h_obj = new Handler();
+    RootCheck a = new RootCheck();
     //Declare an instance of FirebaseAuth
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    CheckBox save_Data;
     ProgressBar pbLogin;
     Button btnLogin;
     Button btnRegister;
     EditText etEmail;
     EditText etPasswd;
     TextView title;
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(a.checkSuperUser()) {
+            Toast.makeText(LoginActivity.this, "루팅 및 무결성 탐지로 인해 앱을 종료합니다.", Toast.LENGTH_LONG).show();
+            h_obj.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("namkiLog","This Device is Rooting");
+                   //System.exit(0);
+                }
+            }, 2000);
+        }else{
+            Log.d("namkiLog","This Device is Not Rooting");
+            //Toast.makeText(LoginActivity.this,"Not Rooted",Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         pbLogin = (ProgressBar)findViewById(R.id.pbLogin);
         //Initialize the EditText Obj
         etEmail = (EditText) findViewById(R.id.etLogin);
         etPasswd = (EditText) findViewById(R.id.etPassword);
+        save_Data = (CheckBox)findViewById(R.id.chk_usrData);
+        //checkBox 이벤트 처리
+        SharedPreferences pref=getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        String id=pref.getString("id_save", "");
+        String pwd=pref.getString("pwd_save", "");
+        Boolean chk1=pref.getBoolean("chk1", false);
+
+        if(chk1==true){
+            etEmail.setText(id);
+            etPasswd.setText(pwd);
+            save_Data.setChecked(chk1);
+        }
+
         //Initialize the FirebaseAuth instance.
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -141,12 +182,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
+
     @Override
     public void onStop(){
         super.onStop();
         if(mAuthListener != null){
             mAuth.removeAuthStateListener(mAuthListener);
         }
-    }
+        SharedPreferences pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        EditText etId=(EditText)findViewById(R.id.etLogin);
+        EditText etPwd=(EditText)findViewById(R.id.etPassword);
+        CheckBox etIdSave=(CheckBox)findViewById(R.id.chk_usrData);
 
+        //SharedPreferences에 각 아이디를 지정하고 EditText 내용을 저장한다.
+        editor.putString("id_save", etId.getText().toString());
+        editor.putString("pwd_save", etPwd.getText().toString());
+        editor.putBoolean("chk1", etIdSave.isChecked());
+        editor.commit();
+    }
 }

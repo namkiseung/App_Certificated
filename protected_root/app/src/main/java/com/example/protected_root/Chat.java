@@ -26,3 +26,5 @@ public class Chat {
         this.text = text;
     }
 }
+
+

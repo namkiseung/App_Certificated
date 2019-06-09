@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
                 Log.d("NamkiLog","exposured admin activity from one kind of anonymous agent");
+
             }
         });
     }

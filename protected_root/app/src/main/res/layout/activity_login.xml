@@ -50,7 +50,7 @@
                 android:singleLine="true" />
             <!--비밀번호 기억 UI-->
             <CheckBox
-                android:id="@+id/chkPw"
+                android:id="@+id/chk_usrData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/etPassword"
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:text="로그인"
-                android:layout_below="@+id/chkPw"
+                android:layout_below="@+id/chk_usrData"
                 android:layout_alignParentLeft="true"
                 android:textColor="#ffffff"
                 android:background="@color/maincolornamki"
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:text="가입"
-                android:layout_below="@+id/chkPw"
+                android:layout_below="@+id/chk_usrData"
                 android:layout_alignParentRight="true"
                 android:textColor="#ffffff"
                 android:background="@color/maincolornamki"
