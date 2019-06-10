@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
             }, 2000);
         }else{
             Log.d("namkiLog","This Device is Not Rooting");
-            //Toast.makeText(LoginActivity.this,"Not Rooted",Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this,"Not Rooted",Toast.LENGTH_SHORT).show();
         }
     }
 
