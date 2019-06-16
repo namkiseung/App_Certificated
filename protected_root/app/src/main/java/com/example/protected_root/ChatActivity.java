@@ -1,8 +1,14 @@
 package com.example.protected_root;
 
 
+import android.app.Service;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,8 +42,7 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    String[] myDataset = {"JAMES: 안녕", "CHRIS: 오늘 뭐했어?","LANE: 영화볼래?"};
-
+    String[] myDataset = {"JAMES: 계산금액 누가 올려바바", "CHRIS: 얼마야??","LANE: 나한테 일단 5천원씩 입금!","LANE: 농협 351-0514-4844-79"};
 
     EditText etText;
     Button btnSend;
@@ -47,7 +53,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
+        copy("");
         database = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -105,7 +111,13 @@ public class ChatActivity extends AppCompatActivity {
         // specify an adapter (see also next example)
         mAdapter = new MyAdapter(myDataset);//mAdapter = new MyAdapter(mChat, email);
         mRecyclerView.setAdapter(mAdapter);//mRecyclerView.setAdapter(mAdapter);
-
+        etText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(ChatActivity.this, "복사 되었습니다.", Toast.LENGTH_SHORT).show();
+                copy(myDataset[3]);
+            }
+        });
         DatabaseReference myRef = database.getReference("chats");
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -149,4 +161,106 @@ public class ChatActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
         finish();
     }
+    public void copy(String copytext) {
+        // 클립보드 객체 얻기
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        // 클립데이터 생성
+        ClipData clipData = ClipData.newPlainText("Test Clipboard", copytext);
+        // 클립보드에 추가
+        clipboardManager.setPrimaryClip(clipData);
+    }
+    public String paste() {
+        String res_data="";
+        // 클립보드 객체 얻기
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (!(clipboardManager.hasPrimaryClip())) {
+            // 클립보드 데이터가 있을 때 처리
+            ClipData data = clipboardManager.getPrimaryClip();
+            res_data = data.toString();
+        }
+        return res_data;
+    }
+}
+/*
+Copy 구현
+1.URI 형태로 임의의 데이터를 클립보드에 저장하려면, 해당 URI에 접근했을 때 실제 데이터를 얻을 수 있도록 ContentProvider를 제공한다.
+2.ClipboardManager 객체를 얻는다.
+3.ClipData 객체를 생성한다.
+4.클립보드에 추가한다.
+...
+// 임의의 메서드
+public void copy() {
+    // 클립보드 객체 얻기
+    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+    // 클립데이터 생성
+    ClipData clipData = ClipData.newPlainText("Test Clipboard", "Test");
+    // 클립보드에 추가
+    clipboardManager.setPrimaryClip(clipData);
+    ...
+}
+...
+Paste 구현
+1.ClipboardManager 객체를 얻는다.
+2.ClipDescription 객체를 얻어서 원하는 MIME 타입인지 조사한다.
+3.MIME 타입에 맞게 처리한다.
+...
+// 임의의 메서드
+public void paste() {
+    // 클립보드 객체 얻기
+    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+    if(!(clipboard.hasPrimaryClip())) {
+        // 클립보드 데이터가 있을 때 처리
+        ClipData data = clipboard.getPrimaryClip();
+        ...
+        if(clipboard.getPrimaryClipDescription().hasMimeType(MIMETYPE_TEXT_PLAIN)) {
+            // MIME 타입이 텍스트일 때 처리
+            ...
+        }
+    }
+    ...
+}
+...
+Clipboard 변경시점 알기
+ClipboardManager객체에 ClipboardManager.OnPrimaryClipChangedListener 리스너를 등록하면, onPrimaryClipChanged() 메서드를 구현하여 클립보드가 변경되었을 때 콜백을 받을 수 있다.
+
+*/
+class ClipboardService extends Service implements ClipboardManager.OnPrimaryClipChangedListener {
+    ClipboardManager mManager;
+
+   /* @Override
+    public void onCreate() {
+        super.onCreate();
+        mManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        // 리스너 등록
+        mManager.addPrimaryClipChangedListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // 리스너 해제
+        mManager.removePrimaryClipChangedListener(this);
+    }
+*/
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO: Return the communication channel to the service.
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public void onPrimaryClipChanged() {
+        if (mManager != null && mManager.getPrimaryClip() != null) {
+            ClipData data = mManager.getPrimaryClip();
+
+            // 한번의 복사로 복수 데이터를 넣었을 수 있으므로, 모든 데이터를 가져온다.
+            int dataCount = data.getItemCount();
+            for (int i = 0 ; i < dataCount ; i++) {
+                Log.e("Test", "clip data - item : "+data.getItemAt(i).coerceToText(this));
+            }
+        } else {
+            Log.e("Test", "No Manager or No Clip data");
+        }
+    }
+
 }
