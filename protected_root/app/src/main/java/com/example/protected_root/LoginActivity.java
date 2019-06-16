@@ -23,7 +23,18 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 public class LoginActivity extends AppCompatActivity {
+    //public static String secretKey = "a";
+    AES256Chiper AES256Chiper_obj = new AES256Chiper();
     Handler h_obj = new Handler();
     RootCheck a = new RootCheck();
     //Declare an instance of FirebaseAuth
@@ -36,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText etEmail;
     EditText etPasswd;
     TextView title;
-
+    Boolean chk1;
     @Override
     public void onResume(){
         super.onResume();
@@ -69,11 +80,19 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences pref=getSharedPreferences("pref", Activity.MODE_PRIVATE);
         String id=pref.getString("id_save", "");
         String pwd=pref.getString("pwd_save", "");
-        Boolean chk1=pref.getBoolean("chk1", false);
+        chk1=pref.getBoolean("chk1", false);
 
         if(chk1==true){
-            etEmail.setText(id);
-            etPasswd.setText(pwd);
+            String decryp_id ="";
+            String decryp_pwd ="";
+            try {
+                decryp_id = AES256Chiper_obj.AES_Decode(id);
+                decryp_pwd = AES256Chiper_obj.AES_Decode(pwd);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            etEmail.setText(decryp_id);
+            etPasswd.setText(decryp_pwd);
             save_Data.setChecked(chk1);
         }
 
@@ -186,7 +205,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStop(){
         super.onStop();
-        if(mAuthListener != null){
+        if(mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
         SharedPreferences pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
@@ -194,7 +213,58 @@ public class LoginActivity extends AppCompatActivity {
         EditText etId=(EditText)findViewById(R.id.etLogin);
         EditText etPwd=(EditText)findViewById(R.id.etPassword);
         CheckBox etIdSave=(CheckBox)findViewById(R.id.chk_usrData);
-
+        //SharedPreferences에 각 아이디를 지정하고 EditText 내용을 저장한다.
+        String encryp_id="";
+        String encryp_pwd="";
+        try {
+            encryp_id = AES256Chiper_obj.AES_Encode(etId.getText().toString());
+            encryp_pwd = AES256Chiper_obj.AES_Encode(etPwd.getText().toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        editor.putString("id_save", encryp_id);
+        editor.putString("pwd_save", encryp_pwd);
+        editor.putBoolean("chk1", etIdSave.isChecked());
+        editor.commit();
+    }
+}
+/*
+   @Override
+    public void onStop(){
+        super.onStop();
+		//파이어베이스 인증리스너 구현
+        if(mAuthListener != null){
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+		//SP 객체 초기화
+        SharedPreferences pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        EditText etId=(EditText)findViewById(R.id.etLogin);
+        EditText etPwd=(EditText)findViewById(R.id.etPassword);
+        CheckBox etIdSave=(CheckBox)findViewById(R.id.chk_usrData);
+        //SP에 각 아이디를 지정하고 EditText 내용을 저장한다.
+        editor.putString("id_save", etId.getText().toString());
+        editor.putString("pwd_save", etPwd.getText().toString());
+        editor.putBoolean("chk1", etIdSave.isChecked());
+        editor.commit();
+    }
+}
+    @Override
+    public void onStop(){
+        super.onStop();
+        if(mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+        SharedPreferences pref = getSharedPreferences("pref", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        EditText etId=(EditText)findViewById(R.id.etLogin);
+        EditText etPwd=(EditText)findViewById(R.id.etPassword);
+        CheckBox etIdSave=(CheckBox)findViewById(R.id.chk_usrData);
+        if(chk1!=true){
+            editor.remove("id_save");
+            editor.remove("pwd_save");
+            editor.commit();
+        }
         //SharedPreferences에 각 아이디를 지정하고 EditText 내용을 저장한다.
         editor.putString("id_save", etId.getText().toString());
         editor.putString("pwd_save", etPwd.getText().toString());
@@ -202,3 +272,4 @@ public class LoginActivity extends AppCompatActivity {
         editor.commit();
     }
 }
+ */
