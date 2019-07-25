@@ -9,7 +9,7 @@ import android.widget.TextView;
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private String[] mDataset;
+    //private String[] mDataset;
     List<Chat> mChat;
     String stEmail;
 
@@ -26,14 +26,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(List<Chat> mChat, String email) {
+    public MyAdapter(List<Chat> mChat) {
         this.mChat = mChat;
-        this.stEmail = email;
+        //this.stEmail = email;
     }
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String[] myDataset) {
-        this.mDataset = myDataset;
-    }
+    //public MyAdapter(String[] myDataset) {
+    //    this.mDataset = myDataset;
+    //}
 //    @Override
 //    public int getItemViewType(int position){
 //        //return super.getItemViewType(position);
@@ -62,13 +62,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         //holder.mTextView.setText(mChat.get(position).getText());
-        holder.mTextView.setText(mDataset[position]);
+        holder.mTextView.setText(mChat.get(position).getText());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;//return mChat.size();
+        return mChat.size();//return mChat.size();
     }
 }
 

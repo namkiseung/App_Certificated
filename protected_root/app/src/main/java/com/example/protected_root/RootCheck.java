@@ -9,8 +9,9 @@ import java.io.InputStreamReader;
 public class RootCheck {
         public static boolean checkSuperUser(){
             Log.d("NamkiLog "+RootCheck.class.getSimpleName(), "");
-            return (checkTags() == true) ? true : false;
-            //return (checkRootedFiles() == true || checkSuperUserCommand() == true  || checkSuperUserCommand2() == true ||  checkTags() == true) ? true : false;
+            Log.d("Protected [RootCheck]",""+checkTags());
+            //return (checkTags() == true) ? true : false;
+            return (checkRootedFiles() == true || checkSuperUserCommand() == true  || checkSuperUserCommand2() == true ||  checkTags() == true) ? true : false;
         }
 
         private static boolean checkRootedFiles(){
@@ -51,7 +52,8 @@ public class RootCheck {
         private static boolean checkTags() {
             String buildTags = android.os.Build.TAGS;
             Log.d("NamkiLog "+"FROCS", "test-keys : " + buildTags.contains("test-keys"));
-            if (buildTags != null || buildTags.contains("test-keys")) {
+            Log.d("NamkiLog "+"FROCS", "buildTags : " + buildTags);
+            if (buildTags != null || buildTags.contains("test-keys") ||buildTags.contains("dev-keys")) {
                 return true;
             }
             return false;

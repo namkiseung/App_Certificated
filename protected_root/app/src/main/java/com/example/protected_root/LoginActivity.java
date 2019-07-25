@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -27,10 +28,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import static java.lang.System.getProperties;
 
 public class LoginActivity extends AppCompatActivity {
     //public static String secretKey = "a";
@@ -51,12 +52,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        //Log.d("System props info : ",""+getProperties());
+        Log.d("Protected [Login]",""+a.checkSuperUser());
         if(a.checkSuperUser()) {
             Toast.makeText(LoginActivity.this, "루팅 및 무결성 탐지로 인해 앱을 종료합니다.", Toast.LENGTH_LONG).show();
             h_obj.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("namkiLog","This Device is Rooting");
+                   Log.d("namkiLog","This Device is Rooting");
                    //System.exit(0);
                 }
             }, 2000);
@@ -70,7 +73,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         pbLogin = (ProgressBar)findViewById(R.id.pbLogin);
         //Initialize the EditText Obj
         etEmail = (EditText) findViewById(R.id.etLogin);
@@ -195,6 +197,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
     //hint
     @Override
     public void onStart(){

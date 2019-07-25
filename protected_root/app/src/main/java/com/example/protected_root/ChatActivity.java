@@ -28,7 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
+import android.os.Build;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,7 +47,7 @@ public class ChatActivity extends AppCompatActivity {
     EditText etText;
     Button btnSend;
     String email;
-    List<Chat> mChat;
+    private List<Chat> mChat;
     FirebaseDatabase database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,23 +65,27 @@ public class ChatActivity extends AppCompatActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //Chat chatModel = new Chat();
                 String stText = etText.getText().toString();
+
                 if (stText.equals("") || stText.isEmpty()){
                     Toast.makeText(ChatActivity.this, "내용을 입력해 주세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     //Toast.makeText(ChatActivity.this, stText, Toast.LENGTH_SHORT).show();
-                    myDataset[myDataset.length+1]=email+": "+stText;
+                   // myDataset[myDataset.length+1]=email+": "+stText;
 
-                    //Calendar c = Calendar.getInstance();
-                    //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    //String formattedDate = df.format(c.getTime());
-                    DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("chats");//.child(formattedDate);
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String formattedDate = df.format(c.getTime());
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference("chats").child(formattedDate);
+                    //FirebaseDatabase.getInstance().getReference("chats");//.child(formattedDate);
+                    Hashtable<String, String> chat = new Hashtable<String, String>();
+                    chat.put("email", email);
+                    chat.put("text", stText);
 
-//                    Hashtable<String, String> chat = new Hashtable<String, String>();
-//                    chat.put("email", email);
-//                    chat.put("text", stText);
-                    myRef.child("chats").setValue(stText);
+                    //FirebaseDatabase.getInstance().getReference().child("chats").push().setValue(stText);//.child(formattedDate);
+                    myRef.setValue(chat);
 
                 }
             }
@@ -107,9 +111,10 @@ public class ChatActivity extends AppCompatActivity {
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mChat = new ArrayList<>();
+
         // specify an adapter (see also next example)
-        mAdapter = new MyAdapter(myDataset);//mAdapter = new MyAdapter(mChat, email);
+        mChat = new ArrayList<>();
+        mAdapter = new MyAdapter(mChat);//mAdapter = new MyAdapter(mChat, email);
         mRecyclerView.setAdapter(mAdapter);//mRecyclerView.setAdapter(mAdapter);
         etText.setOnClickListener(new View.OnClickListener() {
             @Override
