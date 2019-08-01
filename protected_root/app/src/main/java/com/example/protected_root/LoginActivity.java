@@ -49,6 +49,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText etPasswd;
     TextView title;
     Boolean chk1;
+    String stEmali;
+    String stPasswd;
     @Override
     public void onResume(){
         super.onResume();
@@ -105,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Log.d("NamkiLog", "onAuthStateChanged sign in");
+                    Log.d("NamkiLog", "onAuthStateChanged sign in"+user.getUid());
                 } else {
                     Log.d("NamkiLog", "onAuthStateChanged sign out");
                 }
@@ -126,8 +128,8 @@ public class LoginActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String stEmali = etEmail.getText().toString();
-                String stPasswd = etPasswd.getText().toString();
+                stEmali = etEmail.getText().toString();
+                stPasswd = etPasswd.getText().toString();
                 registerUser(stEmali, stPasswd);
 //                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
 //                startActivity(intent);
@@ -140,16 +142,16 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String stEmali = etEmail.getText().toString();
-                String stPasswd = etPasswd.getText().toString();
+                pbLogin.setVisibility(View.VISIBLE);
+                stEmali = etEmail.getText().toString();
+                stPasswd = etPasswd.getText().toString();
                 try {
-                    if (stEmali.equals("admin") && stPasswd.equals("admin")) {
+                    if (!stEmali.equals("")) {
+
+                    } else if (stEmali.equals("admin") && stPasswd.equals("admin")) {
                         Intent intentMain = new Intent(LoginActivity.this, MainActivity.class);
-                     startActivity(intentMain);
-                    } else if (stEmali != "" || stPasswd != "") {
-                        Toast.makeText(LoginActivity.this, "Login",
-                                Toast.LENGTH_SHORT).show();
-                        userLogin(stEmali, stPasswd);
+                        startActivity(intentMain);
+                     //   Toast.makeText(LoginActivity.this, "Null Value",Toast.LENGTH_SHORT).show();
                     }
                     Log.d("NamkiLog", "Check:" + stEmali + "--" + stPasswd);
                 } catch (Exception e) {
@@ -157,6 +159,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     Log.d("NamkiLog", "Check:" + stEmali + "--" + stPasswd);
                 }
+                userLogin(stEmali, stPasswd);
             }
         });
     }
@@ -166,34 +169,37 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d("NamkiLog","createUserWithEmail:onComplete:"+task.isSuccessful());
-                        Toast.makeText(LoginActivity.this, "Authentication success",
-                                Toast.LENGTH_SHORT).show();
-                        if(!task.isSuccessful()){
-                            Toast.makeText(LoginActivity.this, "Authentication failed",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
-    private void userLogin(String email, String password){
-        pbLogin.setVisibility(View.VISIBLE);
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("NamkiLog","createUserWithEmail:onComplete:"+task.isSuccessful());
-                        Toast.makeText(LoginActivity.this, "Hello "+etEmail,
-                                Toast.LENGTH_SHORT).show();
-                        pbLogin.setVisibility(View.GONE);
+
                         if(!task.isSuccessful()){
                             Toast.makeText(LoginActivity.this, "Authentication failed",
                                     Toast.LENGTH_SHORT).show();
                         }else{
                             Toast.makeText(LoginActivity.this, "Authentication success",
                                     Toast.LENGTH_SHORT).show();
+                            Intent intentChat = new Intent(LoginActivity.this, ChatActivity.class);
+                            startActivity(intentChat);
                         }
-                        Intent intentChat = new Intent(LoginActivity.this, ChatActivity.class);
-                        startActivity(intentChat);
+                        pbLogin.setVisibility(View.GONE);
+                    }
+                });
+    }
+    private void userLogin(String email, String password){
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Authentication success",
+                                    Toast.LENGTH_SHORT).show();
+
+                            Intent intentChat = new Intent(LoginActivity.this, ChatActivity.class);
+                            startActivity(intentChat);
+                        }else{
+                            Toast.makeText(LoginActivity.this, "Authentication failed",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        pbLogin.setVisibility(View.GONE);
+
                     }
                 });
     }

@@ -59,6 +59,8 @@ public class ChatActivity extends AppCompatActivity {
         if (user != null) {
             // Name, email address, and profile photo Url
             email = user.getEmail();
+        }else{
+            email = "anonymous";
         }
         etText = (EditText) findViewById(R.id.etMessages);
         btnSend = (Button) findViewById(R.id.btnSend);
@@ -86,7 +88,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     //FirebaseDatabase.getInstance().getReference().child("chats").push().setValue(stText);//.child(formattedDate);
                     myRef.setValue(chat);
-
+                    etText.setText("");
                 }
             }
         });
