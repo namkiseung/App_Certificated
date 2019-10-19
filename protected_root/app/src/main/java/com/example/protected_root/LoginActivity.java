@@ -34,6 +34,7 @@ import javax.crypto.NoSuchPaddingException;
 import static java.lang.System.getProperties;
 
 public class LoginActivity extends AppCompatActivity {
+    Boolean result;
     //public static String secretKey = "a";
     AES256Chiper AES256Chiper_obj = new AES256Chiper();
     Handler h_obj = new Handler();
@@ -70,7 +71,10 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this,"Not Rooted",Toast.LENGTH_SHORT).show();
         }
     }
-
+    //so파일 로드
+    static {
+        //System.loadLibrary();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -188,7 +192,9 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
+                        result = task.isSuccessful();
+                        Log.d("NamkiLog","CheckLoginUser:onComplete:"+result);
+                        if(result) {
                             Toast.makeText(LoginActivity.this, "Authentication success",
                                     Toast.LENGTH_SHORT).show();
 
