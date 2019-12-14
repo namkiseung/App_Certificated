@@ -53,6 +53,7 @@ public class RootCheck {
             String buildTags = android.os.Build.TAGS;
             Log.d("NamkiLog "+"FROCS", "test-keys : " + buildTags.contains("test-keys"));
             Log.d("NamkiLog "+"FROCS", "buildTags : " + buildTags);
+            //실 디바이스 체크 로직
             if (buildTags != null || buildTags.contains("test-keys") ||buildTags.contains("dev-keys")) {
                 return true;
             }
