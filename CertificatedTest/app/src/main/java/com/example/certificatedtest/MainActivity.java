@@ -15,8 +15,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button btn1, btn2;
         btn1 = (Button)findViewById(R.id.btn_1);
-
+        btn2 = (Button)findViewById(R.id.btn_2);
         btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Toast.makeText(this,).show();
+                Intent intent = new Intent(getApplicationContext(), Videoview.class);
+                startActivity(intent);
+            }
+        });
+        btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Toast.makeText(this,).show();
