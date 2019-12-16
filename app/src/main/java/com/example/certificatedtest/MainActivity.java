@@ -8,6 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener{
     Button btn1, btn2, btn3;
+    Button btn_Test1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -15,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         btn1 = (Button)findViewById(R.id.btn_1);btn1.setOnClickListener(this);
         btn2 = (Button)findViewById(R.id.btn_2);btn2.setOnClickListener(this);
         btn3 = (Button)findViewById(R.id.btn_3);btn3.setOnClickListener(this);
+        btn_Test1 = (Button)findViewById(R.id.btn_test1);btn_Test1.setOnClickListener(this);
     }
     @Override
     public void onClick(View v) {
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.btn_1: Intent intent1 = new Intent(getApplicationContext(), VideoviewActivity.class); startActivity(intent1);break;
             case R.id.btn_2: Intent intent2 = new Intent(getApplicationContext(), TextviewActivity.class); startActivity(intent2);break;
             case R.id.btn_3: Intent intent3 = new Intent(getApplicationContext(), MylistviewActivity.class); startActivity(intent3);break;
+            case R.id.btn_test1: Intent intent4 = new Intent(getApplicationContext(), Test1Activity.class); startActivity(intent4);break;
         }
     }
 }

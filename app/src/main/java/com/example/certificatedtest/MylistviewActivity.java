@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AlertDialogLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 
 class RecyclerviewProduct{
     private String url;
-    public RecyclerviewProduct(String name){this.url=name;}
+    public RecyclerviewProduct(String url){this.url=url;}
     public String getUrl(){return this.url;}
 }
 class RecyclerviewViewHolder extends RecyclerView.ViewHolder{
@@ -41,11 +42,10 @@ class RecyclerviewViewHolder extends RecyclerView.ViewHolder{
 }
 //기계를 연결할 때 필요한 변환작업을 위함 함수
 class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewViewHolder> implements View.OnCreateContextMenuListener{
-    private ArrayList<RecyclerviewProduct> arrayList; //item의 갯수
-    private Context context;
+    ArrayList<RecyclerviewProduct> arrayList; //item의 갯수
+    Context context;
     RecyclerviewViewHolder holder;
     public int itemposition;
-
     public void setArrayList(ArrayList<RecyclerviewProduct> list, Context context){
         this.arrayList = list;
         this.context=context;
@@ -65,11 +65,12 @@ class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewViewHolder> i
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerviewViewHolder recyclervierHolder, int i) {
-        RecyclerviewProduct data = arrayList.get(holder.getAdapterPosition());
-        System.out.println("현재 위치 값(매개변수) :"+i);
-        System.out.println("현재 위치 값(호출변수) :"+holder.getAdapterPosition());
+    public void onBindViewHolder(@NonNull final RecyclerviewViewHolder recyclervierHolder, int i) {
+        RecyclerviewProduct data = arrayList.get(i);
+        //System.out.println("현재 위치 값(매개변수i) :"+i + " | 현재 위치 값(호출변수) :"+holder.getAdapterPosition());
+        Toast.makeText(context, "현재 위치 값(매개변수i) :"+i + " | 현재 위치 값(호출변수) :"+holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
         holder.textview.setText(data.getUrl());
+
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -85,18 +86,18 @@ class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewViewHolder> i
     }
     /*플로팅의 메뉴에 수정과 삭제 버튼에 대한 이벤트 정의하기 ㅋ*/
     @Override
-    public void onCreateContextMenu(ContextMenu contextMenu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        MenuItem update = contextMenu.add(Menu.NONE, 100, 1, "수정");
-        MenuItem remove = contextMenu.add(Menu.NONE, 101, 2, "삭제");
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        MenuItem update = menu.add(Menu.NONE, 100, 1, "수정");
+        MenuItem remove = menu.add(Menu.NONE, 101, 2, "삭제");
         update.setOnMenuItemClickListener(onEditMenu);
         remove.setOnMenuItemClickListener(onEditMenu);
 
     }
-    private final MenuItem.OnMenuItemClickListener onEditMenu = new MenuItem.OnMenuItemClickListener() {
+    private MenuItem.OnMenuItemClickListener onEditMenu = new MenuItem.OnMenuItemClickListener() {
         @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
+        public boolean onMenuItemClick(MenuItem item) {
             /*수정할까 삭제할까*/
-            switch (menuItem.getItemId()){
+            switch (item.getItemId()){
                 /*수정할 때 사용하는 Edit값과 버튼 객체 만들어놓자*/
                 case 100:
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -143,8 +144,9 @@ public class MylistviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mylistview);
         itemaddbutton = (com.github.clans.fab.FloatingActionButton)findViewById(R.id.floatingbutton);
-
+        //mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView = (RecyclerView)findViewById(R.id.recy);
+        //recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(MylistviewActivity.this));
 
         products = new ArrayList<>();
@@ -172,6 +174,7 @@ public class MylistviewActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         /*어뎁터 init*/
                         adapter.setArrayList(products, MylistviewActivity.this);
+
                         recyclerView.setAdapter(adapter);
                         /**/
                         Toast.makeText(MylistviewActivity.this, "추가되었습니다", Toast.LENGTH_SHORT).show();
@@ -193,6 +196,5 @@ public class MylistviewActivity extends AppCompatActivity {
         int x = (int)(size.x * 0.8f);
         int y = (int)(size.y * 0.25f);
         window.setLayout(x,y);
-
     }
 }
